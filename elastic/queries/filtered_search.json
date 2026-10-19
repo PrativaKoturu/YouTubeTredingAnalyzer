@@ -1,0 +1,17 @@
+{
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "title": "cricket" } }
+      ],
+      "filter": [
+        { "term": { "region": "IN" } },
+        { "range": { "views": { "gte": 1000 } } }
+      ]
+    }
+  },
+  "sort": [
+    { "views": { "order": "desc" } }
+  ]
+}

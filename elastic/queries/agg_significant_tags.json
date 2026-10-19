@@ -1,0 +1,14 @@
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "unusual_tags": {
+      "significant_terms": {
+        "field": "tags",
+        "size": 20
+      }
+    }
+  }
+}

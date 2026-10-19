@@ -1,0 +1,14 @@
+{
+  "size": 0,
+  "aggs": {
+    "distinct_channels_hll": {
+      "cardinality": {
+        "field": "channel_id",
+        "precision_threshold": 40000
+      }
+    },
+    "exact_value_count": {
+      "value_count": { "field": "channel_id" }
+    }
+  }
+}

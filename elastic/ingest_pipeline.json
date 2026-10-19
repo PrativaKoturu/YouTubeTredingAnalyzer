@@ -1,0 +1,23 @@
+{
+  "description": "Lowercase tags, trim title, stamp ingest time for YouTube trending docs.",
+  "processors": [
+    {
+      "trim": {
+        "field": "title",
+        "ignore_missing": true
+      }
+    },
+    {
+      "lowercase": {
+        "field": "tags",
+        "ignore_missing": true
+      }
+    },
+    {
+      "set": {
+        "field": "ingested_at",
+        "value": "{{_ingest.timestamp}}"
+      }
+    }
+  ]
+}

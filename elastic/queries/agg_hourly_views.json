@@ -1,0 +1,16 @@
+{
+  "size": 0,
+  "aggs": {
+    "views_over_time": {
+      "date_histogram": {
+        "field": "fetched_at",
+        "calendar_interval": "hour",
+        "min_doc_count": 0
+      },
+      "aggs": {
+        "total_views": { "sum": { "field": "views" } },
+        "video_count": { "value_count": { "field": "video_id" } }
+      }
+    }
+  }
+}

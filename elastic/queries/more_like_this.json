@@ -1,0 +1,17 @@
+{
+  "size": 10,
+  "query": {
+    "more_like_this": {
+      "fields": ["title", "description", "tags"],
+      "like": [
+        {
+          "_index": "yt-trending",
+          "_id": "REPLACE_WITH_DOC_ID"
+        }
+      ],
+      "min_term_freq": 1,
+      "min_doc_freq": 1,
+      "max_query_terms": 25
+    }
+  }
+}

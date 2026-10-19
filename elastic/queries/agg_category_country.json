@@ -1,0 +1,17 @@
+{
+  "size": 0,
+  "aggs": {
+    "by_region": {
+      "terms": { "field": "region", "size": 20 },
+      "aggs": {
+        "by_category": {
+          "terms": { "field": "category_name", "size": 15 },
+          "aggs": {
+            "total_views": { "sum": { "field": "views" } },
+            "avg_sentiment": { "avg": { "field": "sentiment" } }
+          }
+        }
+      }
+    }
+  }
+}
