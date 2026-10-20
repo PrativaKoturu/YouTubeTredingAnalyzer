@@ -1,7 +1,7 @@
 PYTHON ?= python3
 export PYTHONPATH := $(CURDIR)
 
-.PHONY: up down logs topics index producer replay consumer analytics queries benchmark search test
+.PHONY: up down logs topics index producer replay bulk-fetch bulk-trending bulk-dry-run jsonl-replay consumer analytics queries benchmark search test
 
 up:
 	docker compose up -d
@@ -28,6 +28,18 @@ producer:
 
 replay:
 	$(PYTHON) producer/csv_replay.py
+
+bulk-fetch:
+	$(PYTHON) producer/bulk_fetch.py --comments
+
+bulk-trending:
+	$(PYTHON) producer/bulk_fetch.py --trending
+
+bulk-dry-run:
+	$(PYTHON) producer/bulk_fetch.py --dry-run --comments
+
+jsonl-replay:
+	$(PYTHON) producer/jsonl_replay.py
 
 consumer:
 	$(PYTHON) consumer/consumer.py

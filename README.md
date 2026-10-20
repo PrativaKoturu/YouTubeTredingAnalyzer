@@ -2,6 +2,7 @@
 
 Big Data Computing mini project (NADPCL72). A streaming pipeline from YouTube trending videos (or a CSV replay) through Kafka into Elasticsearch, with syllabus algorithms implemented from scratch and a Kibana dashboard.
 
+Detailed step-by-step guide: [`HOW_TO_RUN.md`](HOW_TO_RUN.md)  
 Team operating manual: [`TEAM_GUIDE.md`](TEAM_GUIDE.md)  
 What is already built: [`PROGRESS.md`](PROGRESS.md)
 
@@ -28,95 +29,55 @@ YouTube Data API  (or Kaggle CSV replay)
 
 A drawn version of this diagram is in [`docs/architecture.png`](docs/architecture.png).
 
-## Quick start (offline demo)
+## Quick Start (Detailed guide in [`HOW_TO_RUN.md`](HOW_TO_RUN.md))
 
-Python 3.11 or newer (3.13 works), Docker Desktop, and Make. The commands below
-are for macOS/Linux:
+### 1. Prerequisites
+- **Docker Desktop** running
+- **Python 3.10+** (dependencies in `requirements.txt`)
+- Configure `.env` with your `YOUTUBE_API_KEY` (or use the offline replay mode without an API key).
 
+### 2. Step-by-Step Commands
+
+#### Start Infrastructure
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-
-make up
-make topics
-make index
-make replay
-make consumer          # Ctrl+C after it drains the sample
-make analytics
-make queries
-make test
+docker compose up -d
+python -c "from config.settings import create_topics; create_topics()"
+python elastic/create_index.py
 ```
 
-Open Kibana at http://localhost:5601 and import `elastic/kibana_export.ndjson` (Stack Management → Saved Objects → Import). Optional UI: `make search`.
+#### Produce Data into Kafka
+* **Live YouTube API (Bulk Trending):**
+  ```bash
+  python producer/bulk_fetch.py --trending
+  ```
+* *Or Continuous Live Polling:* `python producer/producer.py`
+* *Or Offline CSV Replay (no API key needed):* `python producer/csv_replay.py`
 
-Live API mode: put a YouTube Data API v3 key in `.env` as `YOUTUBE_API_KEY`, then `make producer` instead of `make replay`.
+#### Consume & Index into Elasticsearch
+In another terminal:
+```bash
+python consumer/consumer.py
+```
+*(Press **Ctrl+C** after processing the batch).*
 
-## Run on Windows
+#### Run Analytics (PageRank, HITS, Louvain, TF-IDF)
+```bash
+python analytics/run_all.py
+```
 
-Use Windows 10/11 with Docker Desktop running (Linux containers / WSL 2 backend),
-Python 3.11 or newer, and PowerShell. The steps below use PowerShell and do not
-require Make:
+#### View in Kibana Dashboard
+1. Open <http://localhost:5601>.
+2. Go to **Stack Management** → **Saved Objects** → **Import**.
+3. Upload [`elastic/kibana_export.ndjson`](elastic/kibana_export.ndjson) and open the **YouTube Trending Analyzer** dashboard.
+4. **Tip:** If panels show *"No results found"*, change the time picker in the top-right from **"Last 15 minutes"** to **"Today"** or **"Last 24 hours"**.
 
-1. Open PowerShell in the cloned repository folder.
-2. Create and activate a virtual environment, install dependencies, and create
-   your local environment file:
+#### Optional: Interactive Streamlit UI
+```bash
+python -m streamlit run search_demo/app.py
+```
+Open <http://localhost:8501> in your browser.
 
-   ```powershell
-   py -3 -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   python -m pip install --upgrade pip
-   pip install -r requirements.txt
-   Copy-Item .env.example .env
-   ```
-
-   If PowerShell blocks activation, run
-   `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` once,
-   then activate the environment again. Edit `.env` only if you plan to use the
-   live YouTube API producer; CSV replay works without an API key.
-
-3. Start the infrastructure and prepare Kafka and Elasticsearch:
-
-   ```powershell
-   docker compose up -d
-   python -c "from config.settings import create_topics; create_topics()"
-   python elastic/create_index.py
-   ```
-
-4. In the same PowerShell window, publish the sample CSV and start the consumer:
-
-   ```powershell
-   python producer/csv_replay.py
-   python consumer/consumer.py
-   ```
-
-   Wait for the consumer to process the sample, then press **Ctrl+C**. It commits
-   its offsets and flushes any pending records when stopped.
-
-5. Run analytics and tests:
-
-   ```powershell
-   python analytics/run_all.py
-   python elastic/run_queries.py
-   python -m pytest -q
-   ```
-
-6. Open Kibana at <http://localhost:5601>. Import
-   [`elastic/kibana_export.ndjson`](elastic/kibana_export.ndjson) from
-   **Stack Management → Saved Objects → Import**, then open the **YouTube
-   Trending Analyzer** dashboard. The optional search UI can be started with:
-
-   ```powershell
-   python -m streamlit run search_demo/app.py
-   ```
-
-   Open the Streamlit URL printed in the terminal (usually
-   <http://localhost:8501>).
-
-To stop the Docker services, run `docker compose down`. To use the live YouTube
-API producer instead of the sample CSV, set `YOUTUBE_API_KEY` in `.env` and run
-`python producer/producer.py`.
+To stop services: `docker compose down`.
 
 ## What maps to the syllabus
 

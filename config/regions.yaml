@@ -1,6 +1,14 @@
 # ISO 3166-1 alpha-2 region codes polled by the live producer.
-# Keep the list short: each region costs YouTube API quota.
+# 10 regions for comprehensive big-data collection.
+# Each region costs YouTube API quota per poll cycle.
 regions:
   - IN
   - US
   - GB
+  - JP
+  - BR
+  - DE
+  - FR
+  - KR
+  - CA
+  - AU
