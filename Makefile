@@ -1,4 +1,4 @@
-PYTHON ?= python3
+PYTHON ?= python
 export PYTHONPATH := $(CURDIR)
 
 .PHONY: up down logs topics index producer replay bulk-fetch bulk-trending bulk-dry-run jsonl-replay consumer analytics queries benchmark search test
@@ -24,10 +24,10 @@ index:
 	$(PYTHON) elastic/create_index.py
 
 producer:
-	$(PYTHON) producer/producer.py
+	$(PYTHON) producer.producer
 
 replay:
-	$(PYTHON) producer/csv_replay.py
+	$(PYTHON) producer.csv_replay
 
 bulk-fetch:
 	$(PYTHON) producer/bulk_fetch.py --comments
